@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Payment Latam | Formulario KYC / UIF</title>
+<style>
+  :root {
+    --bg:#f4f7fb; --card:#fff; --text:#1f2937; --muted:#6b7280; --line:#dbe4f0;
+    --primary:#7b5ce5; --secondary:#18c7c3; --danger:#c23a3a; --success:#127f52;
+    --shadow:0 12px 30px rgba(25,40,72,.08); --radius:18px;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial,Helvetica,sans-serif; color:var(--text); background:linear-gradient(180deg,#edf2fb 0%, var(--bg) 260px); }
+  .container { max-width:1180px; margin:0 auto; padding:28px 18px 56px; }
+  .card { background:var(--card); border:1px solid #e5edf7; border-radius:var(--radius); box-shadow:var(--shadow); }
+  .hero { padding:26px; display:grid; grid-template-columns:1.4fr 1fr; gap:20px; background:linear-gradient(135deg,rgba(123,92,229,.08),rgba(24,199,195,.10)); }
+  .logo { max-width:320px; width:100%; height:auto; display:block; margin-bottom:14px; }
+  h1 { margin:0 0 8px; font-size:30px; line-height:1.1; }
+  .sub { color:var(--muted); font-size:15px; line-height:1.55; margin:0; }
+  .top-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; align-content:flex-start; }
+  button {
+    border:none; border-radius:12px; padding:12px 16px; cursor:pointer;
+    font-weight:700; font-size:14px; box-shadow:0 6px 16px rgba(17,24,39,.08);
+  }
+  .btn-primary { background:var(--primary); color:#fff; }
+  .btn-secondary { background:var(--secondary); color:#073c3b; }
+  .btn-light { background:#fff; color:var(--text); border:1px solid var(--line); }
+  .btn-danger { background:#fff2f2; color:var(--danger); border:1px solid #f2caca; }
+  .btn-info { background:#eef6ff; color:#1e4f9a; border:1px solid #cfe0fb; }
+  .btn-success { background:#eef9f2; color:#0d6b44; border:1px solid #c8ebd6; }
+  .quick-card, .panel { padding:18px; }
+  .quick-card { margin-top:14px; }
+  .mini-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+  .mini { background:#f8fbff; border:1px solid #e3ebf6; border-radius:14px; padding:14px; }
+  .mini .k { font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .mini .v { font-size:22px; font-weight:800; }
+  .toolbar { margin-top:18px; display:grid; grid-template-columns:1.4fr 1fr; gap:16px; }
+  .panel-title { font-size:18px; font-weight:800; margin:0 0 10px; }
+  .small { font-size:12px; color:var(--muted); }
+  .status { min-height:18px; margin-top:8px; font-size:13px; color:var(--muted); }
+  .ok { color:var(--success); }
+  form { margin-top:18px; display:grid; gap:16px; }
+  .section { padding:22px; }
+  .section-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+  h2 { margin:0; font-size:20px; }
+  .grid { display:grid; grid-template-columns:repeat(12,1fr); gap:14px; }
+  .field { grid-column:span 12; }
+  .col-6 { grid-column:span 6; } .col-4 { grid-column:span 4; } .col-3 { grid-column:span 3; } .col-8 { grid-column:span 8; }
+  label { display:block; margin-bottom:6px; font-size:13px; font-weight:700; }
+  .required::after { content:" *"; color:var(--danger); }
+  input, select, textarea {
+    width:100%; border:1px solid #d7e1ee; border-radius:12px; padding:12px 14px;
+    font-size:14px; background:#fff; color:var(--text); outline:none;
+  }
+  textarea { resize:vertical; min-height:96px; }
+  .hint { display:block; margin-top:5px; font-size:11px; color:var(--muted); line-height:1.4; }
+  .checks { display:flex; flex-wrap:wrap; gap:10px 14px; margin-top:6px; }
+  .check {
+    display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:999px;
+    background:#f8fbff; border:1px solid #e2eaf5; font-size:14px;
+  }
+  .check input { width:auto; margin:0; accent-color:var(--primary); }
+  .disabled-block { opacity:.42; filter:grayscale(.12); }
+  .disabled-block input, .disabled-block select, .disabled-block textarea, .disabled-block button, .disabled-block .check input {
+    pointer-events:none !important;
+  }
+  .type-chip {
+    display:inline-block; border-radius:999px; padding:7px 12px; font-size:12px; font-weight:700;
+    border:1px solid #d8e3f2; background:#f8fbff; color:#46546d;
+  }
+  .beneficiary-card {
+    background:#fbfdff; border:1px solid #e4ecf7; border-radius:16px; padding:18px; margin-top:12px;
+  }
+  .beneficiary-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+  .sticky-actions { position:sticky; bottom:12px; display:flex; justify-content:center; z-index:30; }
+  .sticky-inner {
+    margin-top:6px; background:rgba(255,255,255,.95); backdrop-filter:blur(10px); border:1px solid #dde7f3;
+    box-shadow:var(--shadow); border-radius:16px; padding:12px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+  }
+  .modal {
+    position:fixed; inset:0; background:rgba(15,23,42,.52); display:none; align-items:center; justify-content:center;
+    z-index:100; padding:20px;
+  }
+  .modal.show { display:flex; }
+  .modal-card {
+    max-width:900px; width:100%; max-height:85vh; overflow:auto; background:#fff; border-radius:18px;
+    border:1px solid #dde7f3; box-shadow:0 20px 50px rgba(15,23,42,.25); padding:24px;
+  }
+  .modal-card h3 { margin-top:0; font-size:22px; }
+  .modal-card h4 { margin-bottom:6px; font-size:16px; }
+  .modal-card p { margin-top:0; line-height:1.6; color:#334155; }
+  .compliance-box {
+    margin-top:12px; padding:16px; border-radius:14px; background:#f8fbff; border:1px solid #dfe8f5;
+  }
+  .score-pill {
+    display:inline-block; padding:8px 12px; border-radius:999px; font-weight:800; font-size:13px;
+    border:1px solid #d7e1ee; background:#fff;
+  }
+  .field-error { border-color:var(--danger)!important; }
+  @media print {
+    .top-actions, .sticky-actions, .remove-beneficiary, #addBeneficiary, .btn-info, .btn-success, .status, .modal {
+      display:none !important;
+    }
+    body { background:#fff; }
+    .card { box-shadow:none; }
+    .container { max-width:100%; padding:0; }
+  }
+  @media (max-width:900px) {
+    .hero, .toolbar { grid-template-columns:1fr; }
+    .top-actions { justify-content:flex-start; }
+    .mini-grid { grid-template-columns:1fr; }
+  }
+  @media (max-width:700px) {
+    .col-6, .col-4, .col-3, .col-8 { grid-column:span 12; }
+    h1 { font-size:24px; }
+  }
+
+@media print {
+  body { background:#fff; }
+  .section { page-break-before: always; break-before: page; }
+  .section:first-of-type { page-break-before: auto; }
+  .card { box-shadow:none; border:1px solid #ccc; }
+  button, .top-actions, .sticky-actions { display:none !important; }
+  .hero { page-break-after: always; }
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero card">
+    <div>
+      <img class='logo' src='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QLiRXhpZgAATU0AKgAAAAgABAE7AAIAAAAIAAABSodpAAQAAAABAAABUpydAAEAAAAQAAACyuocAAcAAAEMAAAAPgAAAAAc6gAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAR3VzdGF2bwAABZADAAIAAAAUAAACoJAEAAIAAAAUAAACtJKRAAIAAAADNjQAAJKSAAIAAAADNjQAAOocAAcAAAEMAAABlAAAAAAc6gAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAyNjowMzowNyAxNjo0NzozMwAyMDI2OjAzOjA3IDE2OjQ3OjMzAAAARwB1AHMAdABhAHYAbwAAAP/hBBpodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvADw/eHBhY2tldCBiZWdpbj0n77u/JyBpZD0nVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkJz8+DQo8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIj48cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPjxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSJ1dWlkOmZhZjViZGQ1LWJhM2QtMTFkYS1hZDMxLWQzM2Q3NTE4MmYxYiIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIi8+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iPjx4bXA6Q3JlYXRlRGF0ZT4yMDI2LTAzLTA3VDE2OjQ3OjMzLjYzNzwveG1wOkNyZWF0ZURhdGU+PC9yZGY6RGVzY3JpcHRpb24+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9InV1aWQ6ZmFmNWJkZDUtYmEzZC0xMWRhLWFkMzEtZDMzZDc1MTgyZjFiIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iPjxkYzpjcmVhdG9yPjxyZGY6U2VxIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpsaT5HdXN0YXZvPC9yZGY6bGk+PC9yZGY6U2VxPg0KCQkJPC9kYzpjcmVhdG9yPjwvcmRmOkRlc2NyaXB0aW9uPjwvcmRmOlJERj48L3g6eG1wbWV0YT4NCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8P3hwYWNr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' alt='Payment Latam'>
+      <h1>Formulario de Alta de Cliente y Declaración de Datos</h1>
+      <p class="sub">KYC / Debida Diligencia – Resolución UIF N° 200/2024 – LA/FT/FP</p>
+      <p class="sub" style="margin-top:10px;">Formulario para identificación del cliente, conocimiento del negocio, beneficiarios finales, perfil transaccional, documentación de respaldo y declaraciones para el proceso de onboarding de Payment Latam.</p>
+    </div>
+    <div>
+      <div class="top-actions">
+        <button type="button" class="btn-primary" id="saveTop">Guardar local</button>
+        <button type="button" class="btn-success" id="loadSavedTop">Recuperar guardado</button>
+        <button type="button" class="btn-secondary" id="saveFileTop">Guardar JSON KYC</button>
+        <button type="button" class="btn-secondary" id="saveHtmlNamedTop">Guardar HTML KYC</button>
+        <button type="button" class="btn-light" id="downloadHtmlTop">Descargar HTML</button>
+        <button type="button" class="btn-light" id="downloadJsonTop">Exportar JSON</button>
+        <button type="button" class="btn-light" id="printTop">Imprimir / PDF</button>
+        <button type="button" class="btn-info" id="openInfoTop">Información legal</button>
+        <button type="button" class="btn-danger" id="clearTop">Limpiar</button>
+      </div>
+      <div class="quick-card card">
+        <div class="panel-title">Resumen rápido</div>
+        <div class="mini-grid">
+          <div class="mini"><div class="k">Tipo</div><div class="v" id="tipoResumen">—</div></div>
+          <div class="mini"><div class="k">Beneficiarios</div><div class="v" id="bfCount">1</div></div>
+          <div class="mini"><div class="k">Completitud</div><div class="v" id="completionPct">0%</div></div>
+        </div>
+        <div class="status" id="saveStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="panel card">
+      <div class="panel-title">Resumen de obligatorios</div>
+      <div class="mini-grid">
+        <div class="mini"><div class="k">Identificación</div><div class="v" id="idStatus">0/0</div></div>
+        <div class="mini"><div class="k">Negocio</div><div class="v" id="bizStatus">0/0</div></div>
+        <div class="mini"><div class="k">AML</div><div class="v" id="amlStatus">0/0</div></div>
+      </div>
+      <div class="small" style="margin-top:10px;">“Guardar local” conserva el avance en este navegador. “Guardar JSON KYC” y “Guardar HTML KYC” descargan archivos con nombre automático CUIT/CUIL_formularioKYC_fecha.</div>
+    </div>
+    <div class="panel card">
+      <div class="panel-title">Vista interna de Compliance</div>
+      <div class="small">Usá este botón una vez completado el formulario para ver la calificación de riesgo y las alertas detectadas.</div>
+      <div class="compliance-box">
+        <button type="button" class="btn-info" id="openComplianceTop">Ver calificación de riesgo</button>
+        <div class="status">Solo visible en esta vista interna.</div>
+      </div>
+    </div>
+  </div>
+
+  <form id="kycForm">
+    <section class="section card">
+      <div class="section-header">
+        <div><h2>1. Tipo de cliente e identificación</h2><div class="small">Seleccione el tipo de cliente para habilitar los campos aplicables.</div></div>
+        <span class="type-chip" id="typeChip">Sin seleccionar</span>
+      </div>
+
+      <div class="grid">
+        <div class="field col-4">
+          <label class="required">Tipo de cliente</label>
+          <select name="tipo_cliente" id="tipo_cliente" data-required="true" data-group="id">
+            <option value="">Seleccionar</option>
+            <option value="PJ">Persona Jurídica</option>
+            <option value="PH">Persona Humana</option>
+          </select>
+        </div>
+        <div class="field col-4">
+          <label>Cliente local / internacional</label>
+          <select name="tipo_geografico">
+            <option value="">Seleccionar</option>
+            <option>Local</option>
+            <option>Internacional</option>
+          </select>
+        </div>
+        <div class="field col-4">
+          <label class="required">Correo electrónico principal</label>
+          <input type="email" name="email" data-required="true" data-group="id">
+        </div>
+      </div>
+
+      <div id="blockPJ">
+        <div class="section-header" style="margin-top:18px;"><div><h2 style="font-size:18px;">Datos de Persona Jurídica</h2></div></div>
+        <div class="grid">
+          <div class="field col-8"><label class="required">Razón social</label><input name="pj_razon_social" data-required="true" data-group="id"></div>
+          <div class="field col-4"><label>Nombre comercial</label><input name="pj_nombre_comercial"></div>
+          <div class="field col-3"><label class="required">CUIT</label><input name="pj_cuit" id="pj_cuit" placeholder="XX-XXXXXXXX-X" data-required="true" data-group="id"><span class="hint" id="pjCuitHint">Formato sugerido: 30-12345678-9</span></div>
+          <div class="field col-3"><label class="required">Fecha de constitución</label><input type="date" name="pj_fecha_constitucion" data-required="true" data-group="id"></div>
+          <div class="field col-3"><label class="required">País de constitución</label><input name="pj_pais_constitucion" data-required="true" data-group="id"></div>
+          <div class="field col-3"><label class="required">Actividad económica principal</label><input name="pj_actividad" data-required="true" data-group="id"></div>
+          <div class="field col-6"><label class="required">Domicilio legal</label><input name="pj_domicilio_legal" data-required="true" data-group="id"></div>
+          <div class="field col-6"><label>Domicilio comercial / operativo</label><input name="pj_domicilio_comercial"></div>
+          <div class="field col-4"><label>Teléfono</label><input name="pj_telefono"></div>
+          <div class="field col-4"><label>Número de inscripción / registro</label><input name="pj_registro"></div>
+          <div class="field col-4"><label>Residencia fiscal</label><input name="pj_residencia_fiscal"></div>
+        </div>
+      </div>
+
+      <div id="blockPH">
+        <div class="section-header" style="margin-top:18px;"><div><h2 style="font-size:18px;">Datos de Persona Humana</h2></div></div>
+        <div class="grid">
+          <div class="field col-8"><label class="required">Nombre y apellido</label><input name="ph_nombre_completo" data-required="true" data-group="id"></div>
+          <div class="field col-4"><label class="required">Documento</label><input name="ph_documento" data-required="true" data-group="id"></div>
+          <div class="field col-3"><label>CUIT / CUIL / CDI</label><input name="ph_cuit" id="ph_cuit" placeholder="XX-XXXXXXXX-X"><span class="hint" id="phCuitHint">Opcional según corresponda</span></div>
+          <div class="field col-3"><label class="required">Fecha de nacimiento</label><input type="date" name="ph_fecha_nacimiento" data-required="true" data-group="id"></div>
+          <div class="field col-3"><label class="required">Nacionalidad</label><input name="ph_nacionalidad" data-required="true" data-group="id"></div>
+          <div class="field col-3"><label>Residencia fiscal</label><input name="ph_residencia_fiscal"></div>
+          <div class="field col-6"><label class="required">Domicilio real</label><input name="ph_domicilio" data-required="true" data-group="id"></div>
+          <div class="field col-3"><label>Teléfono</label><input name="ph_telefono"></div>
+          <div class="field col-3"><label>Profesión / actividad</label><input name="ph_profesion"></div>
+        </div>
+
+        <div class="section-header" style="margin-top:18px;"><div><h2 style="font-size:18px;">Declaración jurada PEP – Persona Humana</h2></div></div>
+        <div class="grid">
+          <div class="field col-6">
+            <label class="required">¿La persona humana reviste condición de PEP?</label>
+            <select name="ph_pep_condicion" data-required="true" data-group="aml">
+              <option value="">Seleccionar</option>
+              <option>No</option>
+              <option>Sí</option>
+            </select>
+          </div>
+          <div class="field col-6">
+            <label>País / jurisdicción del cargo o función</label>
+            <input name="ph_pep_pais">
+          </div>
+          <div class="field col-6">
+            <label>Cargo, función o relación que motiva la condición PEP</label>
+            <textarea name="ph_pep_cargo"></textarea>
+          </div>
+          <div class="field col-6">
+            <label>Período / fecha relevante</label>
+            <input name="ph_pep_periodo" placeholder="Ej.: 2022-2025 o fecha de cese">
+          </div>
+          <div class="field">
+            <label>Observaciones sobre la declaración PEP</label>
+            <textarea name="ph_pep_observaciones"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-header"><div><h2>2. Modelo de negocio</h2><div class="small">Información operativa del cliente y características de su actividad.</div></div></div>
+      <div class="grid">
+        <div class="field col-6"><label class="required">Sitio web / app / canal principal</label><input name="sitio_web" data-required="true" data-group="biz"></div>
+        <div class="field col-3"><label class="required">Tipo de cliente final</label><select name="tipo_cliente_final" data-required="true" data-group="biz"><option value="">Seleccionar</option><option>B2B</option><option>B2C</option><option>Mixto</option></select></div>
+        <div class="field col-3"><label class="required">Canal de venta</label><select name="canal_venta" data-required="true" data-group="biz"><option value="">Seleccionar</option><option>Web</option><option>App</option><option>Presencial</option><option>Mixto</option></select></div>
+        <div class="field"><label class="required">Descripción detallada del negocio</label><textarea name="descripcion_negocio" data-required="true" data-group="biz"></textarea></div>
+        <div class="field"><label>Características operativas</label>
+          <div class="checks">
+            <label class="check"><input type="checkbox" name="modelo_marketplace"> Marketplace</label>
+            <label class="check"><input type="checkbox" name="intermedia_terceros"> Intermedia pagos de terceros</label>
+            <label class="check"><input type="checkbox" name="servicios_digitales"> Servicios digitales</label>
+            <label class="check"><input type="checkbox" name="pagos_recurrentes"> Suscripciones / recurrentes</label>
+            <label class="check"><input type="checkbox" name="alto_contracargo"> Riesgo alto de contracargo</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-header"><div><h2>3. Alcance geográfico y perfil transaccional</h2><div class="small">Información útil para análisis de coherencia, onboarding bancario y monitoreo.</div></div></div>
+      <div class="grid">
+        <div class="field col-4"><label class="required">Países donde opera</label><input name="paises_opera" data-required="true" data-group="biz"></div>
+        <div class="field col-4"><label>Países de clientes</label><input name="paises_clientes"></div>
+        <div class="field col-4"><label>Países de proveedores / beneficiarios</label><input name="paises_proveedores"></div>
+        <div class="field col-3"><label class="required">Moneda principal</label><select name="moneda_principal" data-required="true" data-group="biz"><option value="">Seleccionar</option><option>ARS</option><option>USD</option><option>EUR</option><option>Otra</option></select></div>
+        <div class="field col-3"><label class="required">Volumen mensual esperado</label><input name="volumen_mensual" data-required="true" data-group="biz"></div>
+        <div class="field col-3"><label>Volumen máximo esperado</label><input name="volumen_maximo"></div>
+        <div class="field col-3"><label class="required">Ticket promedio</label><input name="ticket_promedio" data-required="true" data-group="biz"></div>
+        <div class="field col-3"><label>Ticket máximo</label><input name="ticket_maximo"></div>
+        <div class="field col-3"><label class="required">Transacciones mensuales estimadas</label><input name="tx_mensuales" data-required="true" data-group="biz"></div>
+        <div class="field col-3"><label>Estacionalidad</label><select name="estacionalidad"><option value="">Seleccionar</option><option>Baja</option><option>Media</option><option>Alta</option></select></div>
+        <div class="field col-3"><label>Recibe pagos del exterior</label><select name="recibe_exterior"><option value="">Seleccionar</option><option>No</option><option>Sí</option></select></div>
+        <div class="field col-3"><label>Envía fondos al exterior</label><select name="envia_exterior"><option value="">Seleccionar</option><option>No</option><option>Sí</option></select></div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-header"><div><h2>4. Representantes / apoderados</h2><div class="small">Persona autorizada para operar, contratar o firmar documentación.</div></div></div>
+      <div class="grid">
+        <div class="field col-6"><label class="required">Nombre y apellido</label><input name="rep_nombre" data-required="true" data-group="id"></div>
+        <div class="field col-3"><label class="required">Documento</label><input name="rep_documento" data-required="true" data-group="id"></div>
+        <div class="field col-3"><label class="required">Cargo</label><input name="rep_cargo" data-required="true" data-group="id"></div>
+        <div class="field col-4"><label class="required">Email</label><input type="email" name="rep_email" data-required="true" data-group="id"></div>
+        <div class="field col-4"><label class="required">Teléfono</label><input name="rep_telefono" data-required="true" data-group="id"></div>
+        <div class="field col-4"><label>Poder / facultad</label><input name="rep_poder"></div>
+      </div>
+
+      <div class="section-header" style="margin-top:18px;"><div><h2 style="font-size:18px;">Declaración jurada PEP – Representante / apoderado</h2></div></div>
+      <div class="grid">
+        <div class="field col-6">
+          <label class="required">¿El representante / apoderado reviste condición de PEP?</label>
+          <select name="rep_pep_condicion" data-required="true" data-group="aml">
+            <option value="">Seleccionar</option>
+            <option>No</option>
+            <option>Sí</option>
+          </select>
+        </div>
+        <div class="field col-6">
+          <label>País / jurisdicción del cargo o función</label>
+          <input name="rep_pep_pais">
+        </div>
+        <div class="field col-6">
+          <label>Cargo, función o relación que motiva la condición PEP</label>
+          <textarea name="rep_pep_cargo"></textarea>
+        </div>
+        <div class="field col-6">
+          <label>Período / fecha relevante</label>
+          <input name="rep_pep_periodo" placeholder="Ej.: 2022-2025 o fecha de cese">
+        </div>
+        <div class="field">
+          <label>Observaciones sobre la declaración PEP</label>
+          <textarea name="rep_pep_observaciones"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-header"><div><h2>5. Beneficiarios finales</h2><div class="small">Agregar las personas humanas que posean o controlen directa o indirectamente al cliente.</div></div><button type="button" class="btn-light" id="addBeneficiary">Agregar beneficiario</button></div>
+      <div id="beneficiariesContainer"></div>
+    </section>
+
+    <section class="section card">
+      <div class="section-header"><div><h2>6. Perfil AML / debida diligencia</h2><div class="small">Campos relevantes para clasificación de riesgo, medidas de control y análisis complementario. Las declaraciones PEP específicas se incorporan en cada bloque donde se solicita información de personas.</div></div></div>
+      <div class="grid">
+        <div class="field col-3"><label class="required">¿Actúa por cuenta propia?</label><select name="cuenta_propia" data-required="true" data-group="aml"><option value="">Seleccionar</option><option>Sí</option><option>No</option></select></div>
+        <div class="field col-3"><label class="required">¿Opera con jurisdicciones de riesgo?</label><select name="jurisdicciones_riesgo" data-required="true" data-group="aml"><option value="">Seleccionar</option><option>No</option><option>Sí</option></select></div>
+        <div class="field col-3"><label>¿Opera con criptoactivos?</label><select name="cripto"><option value="">Seleccionar</option><option>No</option><option>Sí</option></select></div>
+        <div class="field col-3"><label>¿Actividad intensiva en efectivo?</label><select name="efectivo"><option value="">Seleccionar</option><option>No</option><option>Sí</option></select></div>
+        <div class="field col-6"><label class="required">Origen de fondos</label><textarea name="origen_fondos" data-required="true" data-group="aml"></textarea></div>
+        <div class="field col-6"><label>Justificación del volumen esperado</label><textarea name="justificacion_volumen"></textarea></div>
+        <div class="field"><label>Estructura societaria / cadena de control</label><textarea name="cadena_control"></textarea></div>
+      </div>
+
+      <div class="grid" style="margin-top:14px;">
+        <div class="field col-6">
+          <label class="required">Declaración PEP del cliente / titular</label>
+          <select name="pep_cliente" data-required="true" data-group="aml">
+            <option value="">Seleccionar</option>
+            <option>No, no reviste condición de PEP</option>
+            <option>Sí, reviste condición de PEP</option>
+          </select>
+        </div>
+        <div class="field col-6">
+          <label>Detalle de condición PEP o vínculo con PEP</label>
+          <textarea name="pep_detalle"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-header"><div><h2>7. Flujo de fondos e información bancaria</h2><div class="small">Bloque especialmente útil para PSP y cuenta recaudadora.</div></div></div>
+      <div class="grid">
+        <div class="field col-4"><label>¿Quién paga?</label><input name="quien_paga"></div>
+        <div class="field col-4"><label>¿Cómo paga?</label><input name="como_paga"></div>
+        <div class="field col-4"><label>¿Cómo se liquidan los fondos?</label><input name="como_liquida"></div>
+        <div class="field col-6"><label class="required">Banco</label><input name="banco" data-required="true" data-group="aml"></div>
+        <div class="field col-3"><label class="required">Tipo de cuenta</label><select name="tipo_cuenta" data-required="true" data-group="aml"><option value="">Seleccionar</option><option>Cuenta corriente</option><option>Caja de ahorro</option><option>Cuenta virtual</option><option>Otra</option></select></div>
+        <div class="field col-3"><label class="required">Moneda de la cuenta</label><select name="moneda_cuenta" data-required="true" data-group="aml"><option value="">Seleccionar</option><option>ARS</option><option>USD</option><option>EUR</option><option>Otra</option></select></div>
+        <div class="field col-6"><label class="required">CBU / CVU / IBAN / Número de cuenta</label><input name="cuenta_bancaria" data-required="true" data-group="aml"></div>
+        <div class="field col-6"><label class="required">País de la cuenta</label><input name="pais_cuenta" data-required="true" data-group="aml"></div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-header"><div><h2>8. Documentación y declaraciones</h2><div class="small">Checklist documental y manifestaciones del cliente.</div></div></div>
+      <div class="grid">
+        <div class="field">
+          <label>Documentación acompañada</label>
+          <div class="checks">
+            <label class="check" data-doc-type="PJ"><input type="checkbox" name="doc_estatuto"> Estatuto / contrato social</label>
+            <label class="check"><input type="checkbox" name="doc_cuit"> Constancia de CUIT</label>
+            <label class="check"><input type="checkbox" name="doc_dni"> DNI representantes / titular</label>
+            <label class="check" data-doc-type="PJ"><input type="checkbox" name="doc_poderes"> Poderes</label>
+            <label class="check" data-doc-type="PJ"><input type="checkbox" name="doc_estructura"> Estructura societaria</label>
+            <label class="check" data-doc-type="PJ"><input type="checkbox" name="doc_actas_directorio"> Actas de directorio designando al directorio actual</label>
+            <label class="check" data-doc-type="PJ"><input type="checkbox" name="doc_eecc"> EECC</label>
+            <label class="check" data-doc-type="PH"><input type="checkbox" name="doc_constancia_ingresos"> Constancia de ingresos / respaldo patrimonial</label>
+            <label class="check"><input type="checkbox" name="doc_otro"> Otro soporte relevante</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="required">Declaraciones</label>
+          <div class="checks">
+            <label class="check"><input type="checkbox" name="decl_licitud" data-required="true" data-group="aml"> Declaro que los fondos provienen de actividades lícitas</label>
+            <label class="check"><input type="checkbox" name="decl_veracidad" data-required="true" data-group="aml"> Declaro que la información suministrada es veraz y completa</label>
+            <label class="check"><input type="checkbox" name="decl_screening" data-required="true" data-group="aml"> Autorizo verificaciones y screening</label>
+            <label class="check"><input type="checkbox" name="decl_actualizacion" data-required="true" data-group="aml"> Me comprometo a informar cambios relevantes</label>
+          </div>
+        </div>
+        <div class="field col-4"><label class="required">Lugar y fecha</label><input name="firma_lugar_fecha" data-required="true" data-group="aml"></div>
+        <div class="field col-4"><label class="required">Nombre del firmante</label><input name="firma_nombre" data-required="true" data-group="aml"></div>
+        <div class="field col-4"><label class="required">Cargo</label><input name="firma_cargo" data-required="true" data-group="aml"></div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <div class="section-header"><div><h2>9. Uso interno de Payment Latam</h2><div class="small">Bloque reservado para Compliance / Oficial de Cumplimiento.</div></div></div>
+      <div class="grid">
+        <div class="field col-4"><label>Nivel de riesgo</label><select name="interno_nivel_riesgo"><option value="">Seleccionar</option><option>Bajo</option><option>Medio</option><option>Alto</option></select></div>
+        <div class="field col-4"><label>Debida diligencia</label><select name="interno_dd"><option value="">Seleccionar</option><option>Simplificada</option><option>Normal</option><option>Reforzada</option></select></div>
+        <div class="field col-4"><label>Resultado screening</label><select name="interno_screening"><option value="">Seleccionar</option><option>Sin hallazgos relevantes</option><option>Con alertas a revisar</option><option>Requiere EDD</option></select></div>
+        <div class="field col-6"><label>Aprobado por</label><input name="interno_aprobado_por"></div>
+        <div class="field col-6"><label>Fecha de aprobación</label><input type="date" name="interno_fecha_aprobacion"></div>
+        <div class="field"><label>Observaciones internas</label><textarea name="interno_observaciones"></textarea></div>
+      </div>
+    </section>
+  </form>
+
+  <div class="sticky-actions">
+    <div class="sticky-inner">
+      <button type="button" class="btn-primary" id="saveBottom">Guardar local</button>
+      <button type="button" class="btn-success" id="loadSavedBottom">Recuperar guardado</button>
+      <button type="button" class="btn-secondary" id="saveFileBottom">Guardar JSON KYC</button>
+      <button type="button" class="btn-secondary" id="saveHtmlNamedBottom">Guardar HTML KYC</button>
+      <button type="button" class="btn-light" id="downloadHtmlBottom">Descargar HTML</button>
+      <button type="button" class="btn-light" id="downloadJsonBottom">Exportar JSON</button>
+      <button type="button" class="btn-light" id="validateBtn">Validar obligatorios</button>
+      <button type="button" class="btn-light" id="printBottom">Imprimir / PDF</button>
+      <button type="button" class="btn-info" id="openInfoBottom">Información legal</button>
+      <button type="button" class="btn-info" id="openComplianceBottom">Ver calificación de riesgo</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="infoModal">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+      <div>
+        <h3>Información y disclaimers</h3>
+        <p>Este formulario integra el proceso de identificación, conocimiento del cliente y debida diligencia aplicable al onboarding de Payment Latam.</p>
+      </div>
+      <button type="button" class="btn-light" id="closeModal">Cerrar</button>
+    </div>
+
+    <h4>Prevención de LA/FT/FP</h4>
+    <p>Payment Latam requiere y analiza esta información para cumplir con la Ley N° 25.246 y la Resolución UIF N° 200/2024, incluyendo identificación y conocimiento del cliente, identificación del beneficiario final, evaluación de riesgo, verificación documental, screening y actualización del legajo cuando corresponda.</p>
+
+    <h4>Protección de datos personales</h4>
+    <p>Los datos personales se tratan con fines de validación comercial, análisis documental, prevención de riesgos y cumplimiento normativo, en línea con la Ley N° 25.326 y su reglamentación por Decreto N° 1558/2001. El titular declara que la información suministrada es exacta, completa y vigente y podrá ejercer los derechos que le correspondan conforme a esa normativa.</p>
+
+    <h4>Operatoria internacional y ley cambiaria</h4>
+    <p>Cuando la relación involucre cobros, pagos, liquidaciones o transferencias internacionales, Payment Latam podrá requerir documentación adicional para respaldar la naturaleza económica de la operatoria, el origen y destino de los fondos y la trazabilidad del flujo transaccional, considerando exigencias derivadas del Régimen Penal Cambiario previsto en la Ley N° 19.359.</p>
+
+    <h4>Documentación adicional y monitoreo</h4>
+    <p>Payment Latam podrá solicitar documentación, aclaraciones o respaldos adicionales al inicio de la relación o durante su vigencia, cuando ello resulte necesario para cumplir con obligaciones regulatorias, requerimientos bancarios, auditorías, revisiones internas o medidas de debida diligencia continua.</p>
+  </div>
+</div>
+
+<div class="modal" id="complianceModal">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+      <div>
+        <h3>Calificación interna de riesgo</h3>
+        <p>Vista reservada para uso interno de Compliance.</p>
+      </div>
+      <button type="button" class="btn-light" id="closeComplianceModal">Cerrar</button>
+    </div>
+
+    <div class="compliance-box">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <span class="score-pill" id="scorePill">Score: 0</span>
+        <span class="score-pill" id="levelPill">Riesgo Bajo</span>
+      </div>
+      <div style="margin-top:12px;font-weight:700;">Alertas / fundamentos</div>
+      <ul id="alertsList" style="margin-top:8px; line-height:1.6;"></ul>
+    </div>
+  </div>
+</div>
+
+
+<template id="beneficiaryTemplate">
+  <div class="beneficiary-card" data-beneficiary>
+    <div class="beneficiary-head">
+      <div style="font-weight:800;">Beneficiario final <span class="bf-index"></span></div>
+      <button type="button" class="btn-danger remove-beneficiary">Eliminar</button>
+    </div>
+    <div class="grid">
+      <div class="field col-6"><label class="required">Nombre y apellido</label><input data-bf-field="nombre" data-required="true" data-group="aml"></div>
+      <div class="field col-3"><label class="required">Documento</label><input data-bf-field="documento" data-required="true" data-group="aml"></div>
+      <div class="field col-3"><label>Nacionalidad</label><input data-bf-field="nacionalidad"></div>
+      <div class="field col-6"><label class="required">Domicilio</label><input data-bf-field="domicilio" data-required="true" data-group="aml"></div>
+      <div class="field col-3"><label class="required">% participación</label><input data-bf-field="participacion" data-required="true" data-group="aml"></div>
+      <div class="field col-3"><label class="required">Tipo de control</label><select data-bf-field="tipo_control" data-required="true" data-group="aml"><option value="">Seleccionar</option><option>Directo</option><option>Indirecto</option><option>Por otros medios</option></select></div>
+      <div class="field col-4"><label>Cargo</label><input data-bf-field="cargo"></div>
+      <div class="field col-4"><label>Residencia fiscal</label><input data-bf-field="residencia_fiscal"></div>
+      <div class="field col-4"><label class="required">¿PEP?</label><select data-bf-field="pep" data-required="true" data-group="aml"><option value="">Seleccionar</option><option>No</option><option>Sí</option></select></div>
+      <div class="field col-6"><label>Actividad económica</label><input data-bf-field="actividad"></div>
+      <div class="field col-6"><label>Origen de fondos / patrimonio</label><input data-bf-field="origen_fondos"></div>
+
+      <div class="field col-6"><label>País / jurisdicción del cargo o función PEP</label><input data-bf-field="pep_pais"></div>
+      <div class="field col-6"><label>Período / fecha relevante PEP</label><input data-bf-field="pep_periodo" placeholder="Ej.: 2022-2025 o fecha de cese"></div>
+      <div class="field"><label>Cargo, función o relación que motiva la condición PEP</label><textarea data-bf-field="pep_cargo"></textarea></div>
+      <div class="field"><label>Observaciones sobre la declaración PEP</label><textarea data-bf-field="pep_observaciones"></textarea></div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+const storageKey = "payment_latam_form_final_uif_200_2024_v3";
+const form = document.getElementById("kycForm");
+const beneficiariesContainer = document.getElementById("beneficiariesContainer");
+const beneficiaryTemplate = document.getElementById("beneficiaryTemplate");
+const saveStatus = document.getElementById("saveStatus");
+const tipoCliente = document.getElementById("tipo_cliente");
+const blockPJ = document.getElementById("blockPJ");
+const blockPH = document.getElementById("blockPH");
+
+function setStatus(text, ok=false) {
+  saveStatus.textContent = text || "";
+  saveStatus.className = ok ? "status ok" : "status";
+}
+
+function setDisabledRecursive(container, disabled) {
+  container.querySelectorAll("input, select, textarea, button").forEach(el => {
+    if (disabled) el.setAttribute("disabled", "disabled");
+    else el.removeAttribute("disabled");
+  });
+}
+
+function applyTypeMode() {
+  const type = tipoCliente.value;
+  const chip = document.getElementById("typeChip");
+  const resume = document.getElementById("tipoResumen");
+  chip.textContent = type === "PJ" ? "Persona Jurídica" : type === "PH" ? "Persona Humana" : "Sin seleccionar";
+  resume.textContent = type === "PJ" ? "PJ" : type === "PH" ? "PH" : "—";
+
+  if (type === "PJ") {
+    blockPJ.classList.remove("disabled-block");
+    blockPH.classList.add("disabled-block");
+    setDisabledRecursive(blockPJ, false);
+    setDisabledRecursive(blockPH, true);
+  } else if (type === "PH") {
+    blockPH.classList.remove("disabled-block");
+    blockPJ.classList.add("disabled-block");
+    setDisabledRecursive(blockPH, false);
+    setDisabledRecursive(blockPJ, true);
+  } else {
+    blockPJ.classList.remove("disabled-block");
+    blockPH.classList.remove("disabled-block");
+    setDisabledRecursive(blockPJ, false);
+    setDisabledRecursive(blockPH, false);
+  }
+  applyDocMode();
+  updateCompletion();
+}
+
+function applyDocMode() {
+  const type = tipoCliente.value;
+  document.querySelectorAll("[data-doc-type]").forEach(label => {
+    const docType = label.getAttribute("data-doc-type");
+    const input = label.querySelector("input");
+    const disable = !!type && docType !== type;
+    label.classList.toggle("disabled-block", disable);
+    if (disable) {
+      input.checked = false;
+      input.setAttribute("disabled", "disabled");
+    } else {
+      input.removeAttribute("disabled");
+    }
+  });
+}
+
+function addBeneficiary(data = null) {
+  const card = beneficiaryTemplate.content.firstElementChild.cloneNode(true);
+  beneficiariesContainer.appendChild(card);
+
+  card.querySelector(".remove-beneficiary").addEventListener("click", () => {
+    if (document.querySelectorAll("[data-beneficiary]").length <= 1) {
+      alert("Debe quedar al menos un beneficiario final cargado.");
+      return;
+    }
+    card.remove();
+    refreshBeneficiaries();
+    saveLocal();
+    updateCompletion();
+  });
+
+  card.querySelectorAll("input, select, textarea").forEach(el => {
+    el.addEventListener("input", handleAnyFieldChange);
+    el.addEventListener("change", handleAnyFieldChange);
+  });
+
+  if (data) {
+    card.querySelectorAll("[data-bf-field]").forEach(el => {
+      const key = el.getAttribute("data-bf-field");
+      if (data[key] !== undefined) el.value = data[key];
+    });
+  }
+
+  refreshBeneficiaries();
+  updateCompletion();
+}
+
+function refreshBeneficiaries() {
+  document.querySelectorAll("[data-beneficiary]").forEach((card, idx) => {
+    card.querySelector(".bf-index").textContent = idx + 1;
+    card.querySelectorAll("[data-bf-field]").forEach(el => {
+      el.name = "bf_" + (idx + 1) + "_" + el.getAttribute("data-bf-field");
+    });
+  });
+  document.getElementById("bfCount").textContent = document.querySelectorAll("[data-beneficiary]").length;
+}
+
+function collectData() {
+  const data = {};
+  form.querySelectorAll("input, select, textarea").forEach(el => {
+    if (!el.name) return;
+    data[el.name] = el.type === "checkbox" ? el.checked : el.value;
+  });
+  data.__beneficiaries = [];
+  document.querySelectorAll("[data-beneficiary]").forEach(card => {
+    const bf = {};
+    card.querySelectorAll("[data-bf-field]").forEach(el => {
+      bf[el.getAttribute("data-bf-field")] = el.value;
+    });
+    data.__beneficiaries.push(bf);
+  });
+  return data;
+}
+
+function saveLocal() {
+  localStorage.setItem(storageKey, JSON.stringify(collectData()));
+  setStatus("Avance guardado en este navegador.", true);
+}
+
+function loadLocal(showMessage=true) {
+  const raw = localStorage.getItem(storageKey);
+  if (!raw) {
+    if (!document.querySelector("[data-beneficiary]")) addBeneficiary();
+    applyTypeMode();
+    updateCompletion();
+    if (showMessage) setStatus("No se encontró un guardado previo.");
+    return;
+  }
+
+  const data = JSON.parse(raw);
+  const bfs = data.__beneficiaries || [];
+  delete data.__beneficiaries;
+
+  form.reset();
+  form.querySelectorAll("input, select, textarea").forEach(el => {
+    if (!el.name) return;
+    if (el.type === "checkbox") el.checked = !!data[el.name];
+    else if (data[el.name] !== undefined) el.value = data[el.name];
+  });
+
+  beneficiariesContainer.innerHTML = "";
+  if (bfs.length) bfs.forEach(addBeneficiary);
+  else addBeneficiary();
+
+  applyTypeMode();
+  validateCuit(document.getElementById("pj_cuit"), document.getElementById("pjCuitHint"), true);
+  validateCuit(document.getElementById("ph_cuit"), document.getElementById("phCuitHint"), false);
+  updateCompletion();
+  if (showMessage) setStatus("Se recuperó el guardado previo.", true);
+}
+
+function downloadFile(name, type, content) {
+  const blob = new Blob([content], { type });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function downloadHtml() {
+  downloadFile("Payment_Latam_KYC_UIF_200_2024.html", "text/html", "<!DOCTYPE html>\n" + document.documentElement.outerHTML);
+}
+
+function downloadJson() {
+  downloadFile("Payment_Latam_KYC_UIF_200_2024.json", "application/json", JSON.stringify(collectData(), null, 2));
+}
+
+function clearForm() {
+  if (!confirm("Se borrarán los datos del formulario y el guardado local. ¿Continuar?")) return;
+  localStorage.removeItem(storageKey);
+  form.reset();
+  beneficiariesContainer.innerHTML = "";
+  addBeneficiary();
+  applyTypeMode();
+  updateCompletion();
+  setStatus("Formulario limpiado.");
+}
+
+function normalizeCuit(v) {
+  return String(v || "").replace(/\D/g, "");
+}
+
+function cuitIsValid(v) {
+  const cuit = normalizeCuit(v);
+  if (cuit.length !== 11) return false;
+  const mult = [5,4,3,2,7,6,5,4,3,2];
+  let total = 0;
+  for (let i=0; i<10; i++) total += parseInt(cuit[i], 10) * mult[i];
+  let mod = 11 - (total % 11);
+  if (mod === 11) mod = 0;
+  if (mod === 10) mod = 9;
+  return mod === parseInt(cuit[10], 10);
+}
+
+function validateCuit(input, hintEl, required) {
+  const val = String(input.value || "").trim();
+  input.classList.remove("field-error");
+  if (!val) {
+    hintEl.textContent = required ? "Formato sugerido: 30-12345678-9" : "Opcional según corresponda";
+    hintEl.style.color = "#6b7280";
+    return !required;
+  }
+  if (cuitIsValid(val)) {
+    hintEl.textContent = "CUIT/CUIL válido.";
+    hintEl.style.color = "#127f52";
+    return true;
+  }
+  hintEl.textContent = "CUIT/CUIL con formato o dígito verificador inválido.";
+  hintEl.style.color = "#c23a3a";
+  input.classList.add("field-error");
+  return false;
+}
+
+function getVisibleRequireds() {
+  return [...form.querySelectorAll("[data-required='true']")].filter(el => !el.disabled);
+}
+
+function isFilled(el) {
+  if (el.type === "checkbox") return el.checked;
+  return String(el.value || "").trim() !== "";
+}
+
+function updateCompletion() {
+  const req = getVisibleRequireds();
+  const done = req.filter(isFilled);
+  const pct = req.length ? Math.round((done.length / req.length) * 100) : 0;
+  document.getElementById("completionPct").textContent = pct + "%";
+
+  ["id","biz","aml"].forEach(group => {
+    const all = req.filter(el => el.dataset.group === group);
+    const ok = all.filter(isFilled).length;
+    const target = document.getElementById(group + "Status");
+    if (target) target.textContent = ok + "/" + all.length;
+  });
+
+  refreshBeneficiaries();
+}
+
+function validateForm(showMsg=true) {
+  let missing = 0;
+  getVisibleRequireds().forEach(el => {
+    el.classList.remove("field-error");
+    if (!isFilled(el)) {
+      missing++;
+      el.classList.add("field-error");
+    }
+  });
+  const pjOk = tipoCliente.value !== "PJ" || validateCuit(document.getElementById("pj_cuit"), document.getElementById("pjCuitHint"), true);
+  const phValue = document.getElementById("ph_cuit").value.trim();
+  const phOk = tipoCliente.value !== "PH" || !phValue || validateCuit(document.getElementById("ph_cuit"), document.getElementById("phCuitHint"), false);
+
+  if (showMsg) {
+    if (!missing && pjOk && phOk) alert("No se detectaron campos obligatorios faltantes.");
+    else alert("Hay campos obligatorios incompletos o datos a corregir.");
+  }
+  return !missing && pjOk && phOk;
+}
+
+function computeRisk() {
+  let score = 0;
+  const alerts = [];
+  const v = collectData();
+
+  if (v.tipo_geografico === "Internacional") { score += 10; alerts.push("Cliente internacional."); }
+  if (v.recibe_exterior === "Sí") { score += 12; alerts.push("Recibe pagos del exterior."); }
+  if (v.envia_exterior === "Sí") { score += 14; alerts.push("Envía fondos al exterior."); }
+  if (v.jurisdicciones_riesgo === "Sí") { score += 24; alerts.push("Opera con jurisdicciones de riesgo."); }
+  if (v.cripto === "Sí") { score += 18; alerts.push("Vinculación con criptoactivos."); }
+  if (v.efectivo === "Sí") { score += 10; alerts.push("Actividad intensiva en efectivo."); }
+  if (v.intermedia_terceros) { score += 10; alerts.push("Intermedia pagos de terceros."); }
+  if (v.modelo_marketplace) { score += 8; alerts.push("Modelo marketplace."); }
+  if (v.alto_contracargo) { score += 6; alerts.push("Mayor exposición a contracargos."); }
+  if (v.pep_cliente && v.pep_cliente.startsWith("Sí")) { score += 20; alerts.push("Cliente/titular declarado como PEP."); }
+
+  const num = (x) => {
+    const n = parseFloat(String(x || "").replace(/[^0-9,.-]/g, "").replace(/\./g, "").replace(",", "."));
+    return isNaN(n) ? 0 : n;
+  };
+  const volumen = num(v.volumen_mensual);
+  const ticket = num(v.ticket_promedio);
+
+  if (volumen >= 100000000) { score += 12; alerts.push("Volumen mensual elevado."); }
+  else if (volumen >= 20000000) { score += 7; alerts.push("Volumen mensual medio/alto."); }
+
+  if (ticket >= 1000000) { score += 10; alerts.push("Ticket promedio alto."); }
+
+  (v.__beneficiaries || []).forEach((bf, i) => {
+    if (bf.pep === "Sí") {
+      score += 18;
+      alerts.push("Beneficiario final " + (i+1) + " declarado como PEP.");
+    }
+    if (bf.tipo_control === "Indirecto") {
+      score += 6;
+      alerts.push("Beneficiario final " + (i+1) + " con control indirecto.");
+    }
+  });
+
+  if (score > 100) score = 100;
+  let level = "Riesgo Bajo";
+  if (score >= 60) level = "Riesgo Alto";
+  else if (score >= 30) level = "Riesgo Medio";
+
+  return { score, level, alerts };
+}
+
+function openCompliance() {
+  const r = computeRisk();
+  document.getElementById("scorePill").textContent = "Score: " + r.score;
+  document.getElementById("levelPill").textContent = r.level;
+  const list = document.getElementById("alertsList");
+  list.innerHTML = "";
+  if (!r.alerts.length) {
+    const li = document.createElement("li");
+    li.textContent = "No se detectaron alertas relevantes con la información cargada.";
+    list.appendChild(li);
+  } else {
+    r.alerts.forEach(a => {
+      const li = document.createElement("li");
+      li.textContent = a;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById("complianceModal").classList.add("show");
+}
+
+function closeCompliance() {
+  document.getElementById("complianceModal").classList.remove("show");
+}
+
+function handleAnyFieldChange(e) {
+  if (e.target.id === "pj_cuit") validateCuit(e.target, document.getElementById("pjCuitHint"), true);
+  if (e.target.id === "ph_cuit") validateCuit(e.target, document.getElementById("phCuitHint"), false);
+  if (e.target === tipoCliente) applyTypeMode();
+  updateCompletion();
+}
+
+document.querySelectorAll("input, select, textarea").forEach(el => {
+  el.addEventListener("input", handleAnyFieldChange);
+  el.addEventListener("change", handleAnyFieldChange);
+});
+
+document.getElementById("addBeneficiary").addEventListener("click", () => { addBeneficiary(); saveLocal(); });
+["saveTop","saveBottom"].forEach(id => document.getElementById(id).addEventListener("click", saveLocal));
+["loadSavedTop","loadSavedBottom"].forEach(id => document.getElementById(id).addEventListener("click", () => loadLocal(true)));
+["downloadHtmlTop","downloadHtmlBottom"].forEach(id => document.getElementById(id).addEventListener("click", downloadHtml));
+["downloadJsonTop","downloadJsonBottom"].forEach(id => document.getElementById(id).addEventListener("click", downloadJson));
+["printTop","printBottom"].forEach(id => document.getElementById(id).addEventListener("click", () => window.print()));
+["openComplianceTop","openComplianceBottom"].forEach(id => document.getElementById(id).addEventListener("click", openCompliance));
+document.getElementById("clearTop").addEventListener("click", clearForm);
+document.getElementById("validateBtn").addEventListener("click", () => validateForm(true));
+
+function openModal() { document.getElementById("infoModal").classList.add("show"); }
+function closeModal() { document.getElementById("infoModal").classList.remove("show"); }
+["openInfoTop","openInfoBottom"].forEach(id => document.getElementById(id).addEventListener("click", openModal));
+document.getElementById("closeModal").addEventListener("click", closeModal);
+document.getElementById("infoModal").addEventListener("click", (e) => { if (e.target.id === "infoModal") closeModal(); });
+
+document.getElementById("closeComplianceModal").addEventListener("click", closeCompliance);
+document.getElementById("complianceModal").addEventListener("click", (e) => { if (e.target.id === "complianceModal") closeCompliance(); });
+
+if (!localStorage.getItem(storageKey)) {
+  addBeneficiary();
+}
+
+function formatDateForFilename() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}${mm}${dd}`;
+}
+
+function sanitizeFilenamePart(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-zA-Z0-9_\-]/g, "");
+}
+
+function getPrimaryTaxId() {
+  const tipo = tipoCliente.value;
+  if (tipo === "PJ") {
+    return normalizeCuit(document.getElementById("pj_cuit").value || "");
+  }
+  if (tipo === "PH") {
+    return normalizeCuit(document.getElementById("ph_cuit").value || "") || sanitizeFilenamePart(form.ph_documento?.value || "");
+  }
+  return normalizeCuit(document.getElementById("pj_cuit").value || "")
+      || normalizeCuit(document.getElementById("ph_cuit").value || "")
+      || sanitizeFilenamePart(form.ph_documento?.value || "");
+}
+
+function buildKycFilename(ext) {
+  const id = getPrimaryTaxId() || "sin_identificador";
+  const date = formatDateForFilename();
+  return `${id}_formularioKYC_${date}.${ext}`;
+}
+
+function saveKycFile() {
+  const payload = {
+    metadata: {
+      exported_at: new Date().toISOString(),
+      tipo_cliente: tipoCliente.value || "",
+      filename_rule: "CUIT/CUIL_formularioKYC_fecha"
+    },
+    data: collectData(),
+    compliance_preview: computeRisk()
+  };
+  downloadFile(buildKycFilename("json"), "application/json", JSON.stringify(payload, null, 2));
+  setStatus("Archivo JSON KYC descargado con nombre automático.", true);
+}
+
+function buildFilledHtmlSnapshot() {
+  const clone = document.documentElement.cloneNode(true);
+
+  clone.querySelectorAll("input, textarea, select").forEach(el => {
+    const name = el.getAttribute("name");
+    if (!name) return;
+    const current = document.querySelector(`[name="${name}"]`);
+    if (!current) return;
+
+    if (el.tagName === "TEXTAREA") {
+      el.textContent = current.value || "";
+    } else if (el.tagName === "SELECT") {
+      [...el.options].forEach(opt => {
+        opt.removeAttribute("selected");
+        if (opt.value === current.value) opt.setAttribute("selected", "selected");
+      });
+    } else if (el.type === "checkbox") {
+      if (current.checked) el.setAttribute("checked", "checked");
+      else el.removeAttribute("checked");
+    } else {
+      el.setAttribute("value", current.value || "");
+    }
+  });
+
+  return "<!DOCTYPE html>\n" + clone.outerHTML;
+}
+
+function saveNamedHtml() {
+  downloadFile(buildKycFilename("html"), "text/html", buildFilledHtmlSnapshot());
+  setStatus("Archivo HTML KYC descargado con nombre automático.", true);
+}
+
+["saveFileTop","saveFileBottom"].forEach(id => document.getElementById(id).addEventListener("click", saveKycFile));
+["saveHtmlNamedTop","saveHtmlNamedBottom"].forEach(id => document.getElementById(id).addEventListener("click", saveNamedHtml));
+
+loadLocal(false);
+applyTypeMode();
+updateCompletion();
+</script>
+</body>
+</html>
